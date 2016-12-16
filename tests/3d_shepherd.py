@@ -18,26 +18,31 @@ from point import *
 # sailboat are all on the water surface
 sailboats = [Point(-100, 100, 50), Point(-100, -100, 50),
              Point(100, -100, 50), Point(100, 100, 50)]
+
 # Buoy position
-buoyR = Point(0, 0, 10)
+buoyR = Point(0, 0, 0)
 # real distance to the sailboats
 DR = [distance3D(buoyR, sb) for sb in sailboats]
 
 # --------------------------------------------------------------------------------
-# Received data (noised)
+# Received data (noisy) --> Interval
 # --------------------------------------------------------------------------------
 # noise
 noise = 0.5
+noiseGPS = 0.2
 
-D = [Interval(dr - noise, dr + noise) for dr in DR]
+sailboatsI = [Point(Interval(sb.x).inflate(noiseGPS),
+                    Interval(sb.y).inflate(noiseGPS),
+                    Interval(sb.z).inflate(noiseGPS)) for sb in sailboats]
+D = [Interval(dr).inflate(noise) for dr in DR]
 
-# Separator for one information
-# (Geometry tools from pyibex have been move out, how to find them ?)
-# sep = Sep
-# We'll use our own instead
+
+# --------------------------------------------------------------------------------
+# Separator
+# --------------------------------------------------------------------------------
 seps = []
-for m, d in zip(sailboats, D):
-    sep = distSep3D(m.x, m.y, m.z, d)
+for s, d in zip(sailboatsI, D):
+    sep = distSep3D(s.x, s.y, s.z, d)
     seps.append(sep)
 
 sep = SepQInter(seps)
@@ -48,21 +53,28 @@ startI[0] = Interval(-20, 20)
 startI[1] = Interval(-20, 20)
 startI[2] = Interval(-20, 20)
 
+# SIVIA
+inside, outside, limit = pySIVIA(startI, sep, 1, draw_boxes=False)
+box = fuse(inside + limit)
+buoyX, buoyY, buoyZ = box
+
 
 # --------------------------------------------------------------------------------
 # Drawing section
 # --------------------------------------------------------------------------------
 
-# Creation des figures
 vibes.beginDrawing()
-vibes.newFigure('plan XY')
-vibes.newFigure('plan YZ')
-vibes.newFigure('plan XZ')
-vibes.setFigureProperties({'x': 100, 'y': 100, 'width': 700, 'height': 700})
+# Creation des figures
+fig_props = {'x': 100, 'y': 100, 'width': 700, 'height': 700}
 
-# SIVIA
-res = pySIVIA(startI, sep, 0.1, draw_boxes=False)
-res2 = fuse(res[0] + res[2])
+vibes.newFigure('plan XY')
+vibes.setFigureProperties(fig_props)
+
+vibes.newFigure('plan YZ')
+vibes.setFigureProperties(fig_props)
+
+vibes.newFigure('plan XZ')
+vibes.setFigureProperties(fig_props)
 
 # --------------------------------------------------------------------------------
 # PLAN XY
@@ -73,7 +85,9 @@ vibes.selectFigure('plan XY')
 for s in sailboats:
     vibes.drawCircle(s.x, s.y, 5, 'magenta[red]')
 
-vibes.drawBox(res2[0].ub(), res2[0].lb(), res2[1].ub(), res2[1].lb(), '[blue]')
+vibes.drawBox(buoyX.ub(), buoyX.lb(), buoyY.ub(), buoyY.lb(), '[blue]')
+
+vibes.axisEqual()
 
 # --------------------------------------------------------------------------------
 # PLAN YZ
@@ -84,7 +98,9 @@ vibes.selectFigure('plan YZ')
 for s in sailboats:
     vibes.drawCircle(s.y, s.z, 5, 'magenta[red]')
 
-vibes.drawBox(res2[1].ub(), res2[1].lb(), res2[2].ub(), res2[2].lb(), '[blue]')
+vibes.drawBox(buoyY.ub(), buoyY.lb(), buoyZ.ub(), buoyZ.lb(), '[blue]')
+
+vibes.axisEqual()
 
 # --------------------------------------------------------------------------------
 # PLAN XZ
@@ -95,10 +111,6 @@ vibes.selectFigure('plan XZ')
 for s in sailboats:
     vibes.drawCircle(s.x, s.z, 5, 'magenta[red]')
 
-vibes.drawBox(res2[0].ub(), res2[0].lb(), res2[2].ub(), res2[2].lb(), '[blue]')
+vibes.drawBox(buoyX.ub(), buoyX.lb(), buoyZ.ub(), buoyZ.lb(), '[blue]')
 
 vibes.axisEqual()
-
-
-# print(x, y, a)
-# vibes.drawBox(x[0], x[1], y[0], y[1], 'blue[cyan]')
