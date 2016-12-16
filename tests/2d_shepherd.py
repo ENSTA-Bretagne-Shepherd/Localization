@@ -8,7 +8,7 @@
 """
 from pyibex import *
 from vibes import *
-from myinterval import mypolarXY, distSep
+from myinterval import mypolarXY, distSep, fuse
 import numpy as np
 
 
@@ -74,6 +74,15 @@ for s in sailboats:
     vibes.drawCircle(s[0], s[1], 0.5, 'magenta[red]')
 for x in res[0]:
     vibes.drawBox(x[0].lb(), x[0].ub(), x[1].lb(), x[1].ub(), 'yellow[yellow]')
+for x in res[1]:
+    vibes.drawBox(x[0].lb(), x[0].ub(), x[1].lb(), x[1].ub(), '[green]')
+for x in res[2]:
+    vibes.drawBox(x[0].lb(), x[0].ub(), x[1].lb(), x[1].ub(), '[red]')
+res2 = fuse(res[0] + res[2])
+vibes.drawBox(res2[0].ub(), res2[0].lb(), res2[1].ub(), res2[1].lb(), '[blue]')
+
 vibes.axisEqual()
+
+
 # print(x, y, a)
 # vibes.drawBox(x[0], x[1], y[0], y[1], 'blue[cyan]')

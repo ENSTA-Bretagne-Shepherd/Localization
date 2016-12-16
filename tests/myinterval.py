@@ -25,3 +25,17 @@ def distSep(x, y, r):
     myf1 = Function("x", "y", "(x-%f)^2 + (y-%f)^2" % (x, y))
     myC1 = SepFwdBwd(myf1, r**2)
     return myC1
+
+
+def distSep3D(x, y, z, r):
+    myf1 = Function(
+        "x", "y", "z", "(x-%f)^2 + (y-%f)^2 + (z-%f)^2" % (x, y, z))
+    myC1 = SepFwdBwd(myf1, r**2)
+    return myC1
+
+
+def fuse(intList):
+    a = intList[0]
+    for i in intList:
+        a = a | i
+    return a
