@@ -10,7 +10,32 @@ from pyibex import *
 from vibes import *
 from myinterval import distSep3D, fuse
 from point import *
+import json
+from pprint import pprint
 
+
+# --------------------------------------------------------------------------------
+# Message received from the simulator
+# --------------------------------------------------------------------------------
+with open('pingPositionBateau.json') as data_file_voilier:    
+    pingPositionBateau = json.load(data_file_voilier)
+with open('capteurPositionBouee.json') as data_file_bouee:    
+    capteurPositionBouee = json.load(data_file_bouee)
+#pingPositionBateau = json.load(messagePosBateau)
+xVoilier = Interval(pingPositionBateau["xmin"], pingPositionBateau["xmin"])
+yVoilier = Interval(pingPositionBateau["ymin"], pingPositionBateau["ymax"])
+zVoilier = Interval(pingPositionBateau["zmin"], pingPositionBateau["zmax"])
+idVoilier = pingPositionBateau["id"]
+distanceEmission = Interval(pingPositionBateau["distanceEmissionmin"], pingPositionBateau["distanceEmissionmax"])
+
+#capteurPositionBouee = json.load(messageCaptBouee)
+idBouee = capteurPositionBouee["id"]
+zBouee = Interval(capteurPositionBouee["zmin"], capteurPositionBouee["zmax"])
+
+sailboatsI = [Interval(0), Interval(0), Interval(0), Interval(0)]
+sailboatsI[idVoilier] = Point(xVoilier, yVoilier, zVoilier)
+D = [Interval(0), Interval(0), Interval(0), Interval(0)]
+D[idVoilier] = distanceEmission
 
 # --------------------------------------------------------------------------------
 # Real data and positions
@@ -58,6 +83,11 @@ inside, outside, limit = pySIVIA(startI, sep, 1, draw_boxes=False)
 box = fuse(inside + limit)
 buoyX, buoyY, buoyZ = box
 
+# --------------------------------------------------------------------------------
+# Message sent
+# --------------------------------------------------------------------------------
+messageSent = json.dumps({"id":idBouee,"xMin":buoyX.lb(),"xMax":buoyX.ub(),"yMin":buoyY.lb(),"yMax":buoyY.ub()})
+pprint(messageSent)
 
 # --------------------------------------------------------------------------------
 # Drawing section

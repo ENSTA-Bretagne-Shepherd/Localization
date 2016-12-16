@@ -1,0 +1,11 @@
+{
+	"id": 1,
+	"xmin": 29,
+	"xmax": 35,
+	"ymin": -52,
+	"ymax": -48,
+	"zmin": 0,
+	"zmax": 1,
+	"distanceEmissionmin": 30,
+	"distanceEmissionmax": 33
+}
