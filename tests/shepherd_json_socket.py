@@ -94,7 +94,7 @@ def localisation(messagePosBateau, messageCaptBouee):
 	# --------------------------------------------------------------------------------
 	# Message sent
 	# --------------------------------------------------------------------------------
-	messageSent = json.dumps({"id":idBouee,"xMin":buoyX.lb(),"xMax":buoyX.ub(),"yMin":buoyY.lb(),"yMax":buoyY.ub()})
+	messageSent = json.dumps({"id":idBouee,"xmin":buoyX.lb(),"xmax":buoyX.ub(),"ymin":buoyY.lb(),"ymax":buoyY.ub()})
 	pprint(messageSent)
 	client.sendall(messageSent)
 

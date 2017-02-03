@@ -34,6 +34,13 @@ def distSep3D(x, y, z, r):
     myC1 = SepFwdBwd(myf1, r**2)
     return myC1
 
+def distSep3Dtdoa(x, y, z, Z, c, t0):
+    myf1 = Function(
+        "X", "Y", "t1", "(X-[%f, %f])^2 + (Y-[%f, %f])^2 + ([%f, %f]-[%f, %f])^2 - %f*(t1-%f)" % (
+            x.lb(), x.ub(), y.lb(), y.ub(), Z.lb(), Z.ub(), z.lb(), z.ub(), c, t0))
+    myC1 = SepFwdBwd(myf1, Interval(0))
+    return myC1
+
 
 def fuse(intList):
     a=intList[0]
